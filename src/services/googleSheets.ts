@@ -16,23 +16,41 @@ export const fetchSheetData = async (): Promise<SheetData> => {
     return new Promise((resolve, reject) => {
         Papa.parse(SHEET_URL, {
             download: true,
-            header: true,
+            header: false, // Parse as arrays first to handle the title row
             skipEmptyLines: true,
             complete: (results) => {
-                const records = results.data as Record<string, string>[];
+                const rawRows = results.data as string[][];
 
-                if (!records.length) {
+                if (!rawRows.length) {
                     resolve({ records: [], publishers: [] });
                     return;
                 }
 
-                // Clean keys: trim spaces
-                const cleanedRecords = records.map(record => {
+                // Find the header row (contains 'Months')
+                const headerRowIndex = rawRows.findIndex(row =>
+                    row.some(cell => cell && typeof cell === 'string' && cell.trim().toLowerCase().includes('months'))
+                );
+
+                if (headerRowIndex === -1) {
+                    // Fallback: assume first row if 'Months' not found (unlikely based on known schema)
+                    console.error("Could not find header row containing 'Months'");
+                    resolve({ records: [], publishers: [] });
+                    return;
+                }
+
+                const headers = rawRows[headerRowIndex].map(h => h ? h.trim() : '');
+                const dataRows = rawRows.slice(headerRowIndex + 1);
+
+                // Map rows to objects based on headers
+                const cleanedRecords = dataRows.map(row => {
                     const newRecord: Record<string, any> = {};
-                    Object.keys(record).forEach(key => {
-                        const cleanKey = key.trim();
-                        // Basic value cleaning
-                        let value: string | number = record[key];
+
+                    headers.forEach((header, index) => {
+                        if (!header) return; // Skip empty headers
+
+                        // value at this index (or empty string if row is short)
+                        let value: string | number = row[index] || '';
+
                         if (typeof value === 'string') {
                             value = value.trim();
                             // Replace '- ' or similar with 0
@@ -40,24 +58,29 @@ export const fetchSheetData = async (): Promise<SheetData> => {
                                 value = 0;
                             } else {
                                 // Try to parse number if possible, but keep month as string
-                                if (cleanKey.toLowerCase() !== 'months') {
+                                // Check if this specific header is NOT 'Months'
+                                if (header.toLowerCase() !== 'months' && !header.toLowerCase().includes('months')) {
                                     const num = parseFloat(value.replace(/,/g, ''));
                                     if (!isNaN(num)) value = num;
                                 }
                             }
                         }
-                        newRecord[cleanKey] = value;
+                        newRecord[header] = value;
                     });
                     return newRecord as UsageRecord;
                 });
 
                 // Filter out "Total" row if it exists
-                const dataRecords = cleanedRecords.filter(r => r['Months'] && r['Months'].toString().toLowerCase() !== 'total');
+                // key might be "Months" or "Months " -> we trimmed headers so it should be "Months"
+                const monthKey = headers.find(h => h.toLowerCase().includes('months')) || 'Months';
+                const dataRecords = cleanedRecords.filter((r: any) =>
+                    r[monthKey] && r[monthKey].toString().toLowerCase() !== 'total'
+                );
 
                 // Extract publishers from headers (excluding 'Months')
-                // We use the first record to get keys, assuming headers were parsed correctly
-                const firstRecord = cleanedRecords[0];
-                const publishers = Object.keys(firstRecord).filter(k => k.toLowerCase() !== 'months' && k !== '');
+                const publishers = headers.filter(k =>
+                    k && k.toLowerCase() !== 'months' && !k.toLowerCase().includes('month')
+                );
 
                 resolve({ records: dataRecords, publishers });
             },
