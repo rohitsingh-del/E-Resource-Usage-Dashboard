@@ -15,12 +15,19 @@ interface ChartsProps {
 const COLORS = ['#38bdf8', '#818cf8', '#22d3ee', '#4ade80', '#fbbf24', '#f87171', '#c084fc'];
 
 export const DashboardCharts = ({ data }: ChartsProps) => {
-    const [selectedPublisher, setSelectedPublisher] = useState<string>(data.publishers[0] || '');
+    const [selectedPublisher, setSelectedPublisher] = useState<string>('All');
 
     // Prepare data for the monthly trend chart
     const trendData = useMemo(() => {
         return data.records.map(record => {
-            const value = Number(record[selectedPublisher]) || 0;
+            let value = 0;
+            if (selectedPublisher === 'All') {
+                data.publishers.forEach(pub => {
+                    value += Number(record[pub]) || 0;
+                });
+            } else {
+                value = Number(record[selectedPublisher]) || 0;
+            }
             return {
                 month: record.month || record['Months'],
                 value: value
@@ -69,6 +76,7 @@ export const DashboardCharts = ({ data }: ChartsProps) => {
                         onChange={(e) => setSelectedPublisher(e.target.value)}
                         className="bg-slate-800 border border-slate-700 text-slate-200 text-sm rounded-lg focus:ring-accent focus:border-accent block p-2.5 outline-none"
                     >
+                        <option value="All">All Publishers</option>
                         {data.publishers.map(pub => (
                             <option key={pub} value={pub}>{pub}</option>
                         ))}
