@@ -33,27 +33,27 @@ export const SchoolResourceTable = () => {
     return (
         <Card className="overflow-hidden">
             <div className="mb-6">
-                <h2 className="text-xl font-bold flex items-center gap-2">
+                <h2 className="text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white">
                     <School className="text-accent" size={24} />
                     School & Department Resources
                 </h2>
-                <p className="text-slate-400 text-sm">
+                <p className="text-slate-500 dark:text-slate-400 text-sm">
                     Breakdown of library resources allocated to specific schools and departments.
                 </p>
             </div>
 
             <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-slate-400">
-                    <thead className="text-xs uppercase bg-slate-800 text-slate-200">
+                <table className="w-full text-left text-sm text-slate-500 dark:text-slate-400">
+                    <thead className="text-xs uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
                         <tr>
                             <th scope="col" className="px-6 py-3 rounded-tl-lg">School / Department</th>
                             <th scope="col" className="px-6 py-3 rounded-tr-lg">Assigned Resources</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800">
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
                         {schoolMapping.map((item, index) => (
-                            <tr key={index} className="hover:bg-slate-800/30 transition-colors">
-                                <td className="px-6 py-4 font-medium text-slate-200 whitespace-nowrap">
+                            <tr key={index} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-200 whitespace-nowrap">
                                     {item.school}
                                 </td>
                                 <td className="px-6 py-4">
@@ -61,7 +61,7 @@ export const SchoolResourceTable = () => {
                                         {item.resources.map((res, i) => (
                                             <span
                                                 key={i}
-                                                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                                                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20"
                                             >
                                                 <BookOpen size={10} />
                                                 {res}

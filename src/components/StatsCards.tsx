@@ -47,8 +47,8 @@ export const StatsCards = ({ data, datasetName }: StatsProps) => {
                     <BookOpen size={24} />
                 </div>
                 <div>
-                    <p className="text-slate-400 text-sm">Total Usage</p>
-                    <h3 className="text-2xl font-bold">{totalUsage.toLocaleString()}</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Total Usage</p>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{totalUsage.toLocaleString()}</h3>
                     <p className="text-xs text-slate-500">{datasetName === '2025 Data' ? 'Jan 2025 - Dec 2025' : datasetName}</p>
                 </div>
             </Card>
@@ -58,8 +58,8 @@ export const StatsCards = ({ data, datasetName }: StatsProps) => {
                     <Award size={24} />
                 </div>
                 <div>
-                    <p className="text-slate-400 text-sm">Top Source</p>
-                    <h3 className="text-xl font-bold truncate max-w-[150px]" title={topPublisher[0]}>{topPublisher[0]}</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Top Source</p>
+                    <h3 className="text-xl font-bold truncate max-w-[150px] text-slate-900 dark:text-white" title={topPublisher[0]}>{topPublisher[0]}</h3>
                     <p className="text-xs text-slate-500">{topPublisher[1].toLocaleString()} views</p>
                 </div>
             </Card>
@@ -69,8 +69,8 @@ export const StatsCards = ({ data, datasetName }: StatsProps) => {
                     <TrendingUp size={24} />
                 </div>
                 <div>
-                    <p className="text-slate-400 text-sm">Peak Month</p>
-                    <h3 className="text-xl font-bold">{peakMonth.month}</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Peak Month</p>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">{peakMonth.month}</h3>
                     <p className="text-xs text-slate-500">{peakMonth.total.toLocaleString()} views</p>
                 </div>
             </Card>
@@ -80,8 +80,8 @@ export const StatsCards = ({ data, datasetName }: StatsProps) => {
                     <BarChart3 size={24} />
                 </div>
                 <div>
-                    <p className="text-slate-400 text-sm">Active Publishers</p>
-                    <h3 className="text-2xl font-bold">{data.publishers.length}</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Active Publishers</p>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{data.publishers.length}</h3>
                     <p className="text-xs text-slate-500">{datasetName === '2025 Data' ? 'Jan 2025 - Dec 2025' : datasetName}</p>
                 </div>
             </Card>
