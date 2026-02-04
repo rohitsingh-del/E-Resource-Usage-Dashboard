@@ -3,6 +3,7 @@ import { fetchSheetData, type SheetData } from './services/googleSheets';
 import { DashboardCharts } from './components/DashboardCharts';
 import { StatsCards } from './components/StatsCards';
 import { AnalysisPanel } from './components/AnalysisPanel';
+import { SchoolResourceTable } from './components/SchoolResourceTable';
 import { Loader2 } from 'lucide-react';
 
 function App() {
@@ -61,8 +62,13 @@ function App() {
         </div>
       </div>
 
-      <footer className="text-center text-slate-600 text-sm py-8">
-        © {new Date().getFullYear()} Galgotias University. All Rights Reserved.
+      <SchoolResourceTable />
+
+      <footer className="text-center text-slate-600 text-sm py-8 space-y-2">
+        <p>© {new Date().getFullYear()} Galgotias University. All Rights Reserved.</p>
+        <p className="text-xs text-slate-700">
+          Created and designed by Rohit Singh, Assistant Librarian, Galgotias University
+        </p>
       </footer>
     </div>
   );
