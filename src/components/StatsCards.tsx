@@ -48,6 +48,7 @@ export const StatsCards = ({ data }: StatsProps) => {
                 <div>
                     <p className="text-slate-400 text-sm">Total Usage</p>
                     <h3 className="text-2xl font-bold">{totalUsage.toLocaleString()}</h3>
+                    <p className="text-xs text-slate-500">Jan 2025 - Dec 2025</p>
                 </div>
             </Card>
 
@@ -80,6 +81,7 @@ export const StatsCards = ({ data }: StatsProps) => {
                 <div>
                     <p className="text-slate-400 text-sm">Active Publishers</p>
                     <h3 className="text-2xl font-bold">{data.publishers.length}</h3>
+                    <p className="text-xs text-slate-500">Jan 2025 - Dec 2025</p>
                 </div>
             </Card>
         </div>
