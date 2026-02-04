@@ -10,11 +10,15 @@ export interface SheetData {
     publishers: string[];
 }
 
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpo7h-HSoZ6knQ7hib7GdKNEJgEPUGaFPXPZ5bKyrByUQ2ap_xmNuP8W94rD_j4A/pub?output=csv';
+// Dataset URLs
+export const DATASETS = {
+    '2025 Data': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpo7h-HSoZ6knQ7hib7GdKNEJgEPUGaFPXPZ5bKyrByUQ2ap_xmNuP8W94rD_j4A/pub?output=csv',
+    'Jan 2026 (School Wise)': 'ENTER_NEW_CSV_URL_HERE' // Placeholder
+};
 
-export const fetchSheetData = async (): Promise<SheetData> => {
+export const fetchSheetData = async (url: string = DATASETS['2025 Data']): Promise<SheetData> => {
     return new Promise((resolve, reject) => {
-        Papa.parse(SHEET_URL, {
+        Papa.parse(url, {
             download: true,
             header: false, // Parse as arrays first to handle the title row
             skipEmptyLines: true,

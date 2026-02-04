@@ -1,22 +1,24 @@
 import { useEffect, useState } from 'react';
-import { fetchSheetData, type SheetData } from './services/googleSheets';
+import { fetchSheetData, type SheetData, DATASETS } from './services/googleSheets';
 import { DashboardCharts } from './components/DashboardCharts';
 import { StatsCards } from './components/StatsCards';
 import { AnalysisPanel } from './components/AnalysisPanel';
 import { SchoolResourceTable } from './components/SchoolResourceTable';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Calendar } from 'lucide-react';
 
 function App() {
   const [data, setData] = useState<SheetData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDataset, setSelectedDataset] = useState<keyof typeof DATASETS>('2025 Data');
 
   useEffect(() => {
-    fetchSheetData()
+    setLoading(true);
+    fetchSheetData(DATASETS[selectedDataset])
       .then(setData)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedDataset]);
 
   if (loading) {
     return (
@@ -46,12 +48,23 @@ function App() {
           <p className="text-slate-400 mt-1">Galgotias University Knowledge Center</p>
         </div>
         <div className="text-right hidden md:block">
-          <p className="text-sm text-slate-500">Live Data from Google Sheets</p>
+          <div className="flex items-center gap-2 mb-1 justify-end">
+            <Calendar size={14} className="text-slate-500" />
+            <select
+              value={selectedDataset}
+              onChange={(e) => setSelectedDataset(e.target.value as keyof typeof DATASETS)}
+              className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded focus:ring-accent focus:border-accent p-1 outline-none"
+            >
+              {Object.keys(DATASETS).map(key => (
+                <option key={key} value={key}>{key}</option>
+              ))}
+            </select>
+          </div>
           <p className="text-xs text-slate-600">Last Setup: {new Date().toLocaleDateString()}</p>
         </div>
       </header>
 
-      <StatsCards data={data} />
+      <StatsCards data={data} datasetName={selectedDataset} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">

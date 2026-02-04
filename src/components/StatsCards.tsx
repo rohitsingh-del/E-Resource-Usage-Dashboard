@@ -4,9 +4,10 @@ import { BookOpen, TrendingUp, Award, BarChart3 } from 'lucide-react';
 
 interface StatsProps {
     data: SheetData;
+    datasetName: string;
 }
 
-export const StatsCards = ({ data }: StatsProps) => {
+export const StatsCards = ({ data, datasetName }: StatsProps) => {
     // Calculate Totals
     const totalUsage = data.records.reduce((acc, record) => {
         let monthlyTotal = 0;
@@ -48,7 +49,7 @@ export const StatsCards = ({ data }: StatsProps) => {
                 <div>
                     <p className="text-slate-400 text-sm">Total Usage</p>
                     <h3 className="text-2xl font-bold">{totalUsage.toLocaleString()}</h3>
-                    <p className="text-xs text-slate-500">Jan 2025 - Dec 2025</p>
+                    <p className="text-xs text-slate-500">{datasetName === '2025 Data' ? 'Jan 2025 - Dec 2025' : datasetName}</p>
                 </div>
             </Card>
 
@@ -81,7 +82,7 @@ export const StatsCards = ({ data }: StatsProps) => {
                 <div>
                     <p className="text-slate-400 text-sm">Active Publishers</p>
                     <h3 className="text-2xl font-bold">{data.publishers.length}</h3>
-                    <p className="text-xs text-slate-500">Jan 2025 - Dec 2025</p>
+                    <p className="text-xs text-slate-500">{datasetName === '2025 Data' ? 'Jan 2025 - Dec 2025' : datasetName}</p>
                 </div>
             </Card>
         </div>
