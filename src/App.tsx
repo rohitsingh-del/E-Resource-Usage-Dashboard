@@ -66,8 +66,8 @@ function App() {
 
       <footer className="text-center text-slate-600 text-sm py-8 space-y-2">
         <p>© {new Date().getFullYear()} Galgotias University. All Rights Reserved.</p>
-        <p className="text-xs text-slate-700">
-          Created and designed by Rohit Singh, Assistant Librarian, Galgotias University
+        <p className="text-base font-semibold text-slate-400 bg-slate-800/50 inline-block px-4 py-2 rounded-full border border-slate-700/50">
+          Created and designed by <span className="text-accent font-bold">Rohit Singh</span>, Assistant Librarian, Galgotias University
         </p>
       </footer>
     </div>
