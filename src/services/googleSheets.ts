@@ -141,3 +141,123 @@ export const fetchSheetData = async (url: string = DATASETS['2025 Data']): Promi
         });
     });
 };
+
+// Newspaper Data GIDs (March 2025 onwards)
+export const NEWSPAPER_DATASETS = {
+    'March 2025': '621847070',
+    'April 2025': '786694274',
+    'May 2025': '1348093130',
+    'July 2025': '1690480486',
+    'August 2025': '1801053725',
+    'September 2025': '781167202',
+    'October 2025': '1070440802',
+    'November 2025': '1847238740',
+    'December 2025': '1824142180'
+};
+
+export interface NewspaperRecord {
+    name: string;
+    totalCopies: number;
+    totalPrice: number;
+}
+
+export const fetchNewspaperData = async (gid: string): Promise<NewspaperRecord[]> => {
+    const url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRNxjWC8Ju39ezX9omxJl2FIyGwoB3g4svtaPFaI5Mq5X471Zv5XIKQWCsagKJC7g/pub?gid=${gid}&single=true&output=csv`;
+
+    return new Promise((resolve, reject) => {
+        Papa.parse(url, {
+            download: true,
+            header: false,
+            skipEmptyLines: true,
+            complete: (results) => {
+                const rows = results.data as string[][];
+
+                if (!rows.length) {
+                    resolve([]);
+                    return;
+                }
+
+                // 1. Find the Header Row (containing "Date" or "Days")
+                // Based on CSV, it seems to be around row 2 or 3.
+                // We look for a row that has "Price" or "No.of Days"
+                let headerRowIndex = -1;
+
+                // Strategy: Look for the row that contains "Total Price" or "No.of Days"
+                for (let i = 0; i < Math.min(rows.length, 10); i++) {
+                    const rowStr = rows[i].join(' ').toLowerCase();
+                    if (rowStr.includes('total price') && rowStr.includes('days')) {
+                        headerRowIndex = i;
+                        break;
+                    }
+                }
+
+                if (headerRowIndex === -1) {
+                    // Fallback: Look for "Date" if above fails
+                    const dateRow = rows.findIndex(r => r[0] === 'Date');
+                    if (dateRow !== -1) headerRowIndex = dateRow + 1; // The row AFTER "Date" usually has the column headers for Data
+                    else {
+                        // Absolute fallback, try row 2 (index 2, 0-based) as per visual check
+                        headerRowIndex = 2;
+                    }
+                }
+
+                if (headerRowIndex === -1 || headerRowIndex >= rows.length) {
+                    resolve([]);
+                    return;
+                }
+
+                const headerRow = rows[headerRowIndex];
+
+                // Find Indices
+                // "Total Price" might be split into two lines in the cell ("Total \n Price"), so we clean it
+                const cleanHeader = headerRow.map(h => h ? h.replace(/\n| /g, '').toLowerCase() : '');
+
+
+                // "Total Price" index
+                const priceIndex = cleanHeader.findIndex(h => h.includes('totalprice') || h.includes('price'));
+                // "No. of Days" / "Total Received Paper" index
+                let copiesIndex = cleanHeader.findIndex(h => h.includes('no.ofdays') || h.includes('days') || (h.includes('received') && h.includes('paper')));
+
+
+                const dataRows = rows.slice(headerRowIndex + 1);
+                const records: NewspaperRecord[] = [];
+
+                dataRows.forEach(row => {
+                    const name = row[0]; // Newspaper Name is usually first column
+                    if (!name || name.trim() === '' || name.toLowerCase().includes('total') || name.toLowerCase().includes('month')) return;
+
+                    let priceVal = 0;
+                    let copiesVal = 0;
+
+                    if (priceIndex !== -1 && row[priceIndex]) {
+                        priceVal = parseFloat(row[priceIndex].replace(/,/g, '')) || 0;
+                    } else {
+                        // Try last column
+                        const lastVal = row[row.length - 1];
+                        priceVal = parseFloat(lastVal?.replace(/,/g, '')) || 0;
+                    }
+
+                    if (copiesIndex !== -1 && row[copiesIndex]) {
+                        copiesVal = parseFloat(row[copiesIndex].replace(/,/g, '')) || 0;
+                    } else {
+                        // Try 2nd to last
+                        const val = row[row.length - 2];
+                        copiesVal = parseFloat(val?.replace(/,/g, '')) || 0;
+                    }
+
+                    // Only add if it looks like a valid record (has a name and at least one non-zero value or is a known paper)
+                    if (name.length > 2) {
+                        records.push({
+                            name: name.trim(),
+                            totalCopies: copiesVal,
+                            totalPrice: priceVal
+                        });
+                    }
+                });
+
+                resolve(records);
+            },
+            error: (err: any) => reject(err)
+        });
+    });
+};
