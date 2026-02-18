@@ -261,3 +261,66 @@ export const fetchNewspaperData = async (gid: string): Promise<NewspaperRecord[]
         });
     });
 };
+
+export type Language = 'Hindi' | 'English' | 'Other';
+
+export interface MonthlyAggregation {
+    month: string;
+    totalIsr: number; // Total Copies
+    totalPrice: number;
+    records: NewspaperRecord[];
+}
+
+export const getNewspaperLanguage = (name: string): Language => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('hindi') ||
+        lowerName.includes('jagran') ||
+        lowerName.includes('ujala') ||
+        lowerName.includes('nav bharat') ||
+        lowerName.includes('sahara') ||
+        lowerName.includes('aaj') ||
+        lowerName.includes('jansatta')) {
+        return 'Hindi';
+    }
+    if (lowerName.includes('times') ||
+        lowerName.includes('hindu') ||
+        lowerName.includes('pioneer') ||
+        lowerName.includes('express') ||
+        lowerName.includes('mail') ||
+        lowerName.includes('tribune') ||
+        lowerName.includes('standard') ||
+        lowerName.includes('mint')) {
+        return 'English';
+    }
+    return 'Other';
+};
+
+export const fetchAllNewspaperMonths = async (): Promise<MonthlyAggregation[]> => {
+    const months = Object.keys(NEWSPAPER_DATASETS) as Array<keyof typeof NEWSPAPER_DATASETS>;
+
+    // Create an array of promises
+    const promises = months.map(async (month) => {
+        try {
+            const records = await fetchNewspaperData(NEWSPAPER_DATASETS[month]);
+            const totalCopies = records.reduce((sum, r) => sum + r.totalCopies, 0);
+            const totalPrice = records.reduce((sum, r) => sum + r.totalPrice, 0);
+
+            return {
+                month,
+                totalIsr: totalCopies,
+                totalPrice,
+                records
+            };
+        } catch (error) {
+            console.error(`Failed to fetch data for ${month}`, error);
+            return {
+                month,
+                totalIsr: 0,
+                totalPrice: 0,
+                records: []
+            };
+        }
+    });
+
+    return Promise.all(promises);
+};
