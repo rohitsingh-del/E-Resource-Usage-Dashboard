@@ -9,28 +9,37 @@ import { Card } from './ui/Card';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042'];
 
-const LanguagePieChart = ({ data }: { data: any[] }) => (
-    <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-            <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-            >
-                {data.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-        </PieChart>
-    </ResponsiveContainer>
-);
+const LanguagePieChart = ({ data }: { data: any[] }) => {
+    if (!data || data.length === 0 || data.every(d => d.value === 0)) {
+        return (
+            <div className="flex h-[300px] items-center justify-center text-slate-400">
+                No data available for language distribution
+            </div>
+        );
+    }
+    return (
+        <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+                <Pie
+                    data={data}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                >
+                    {data.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+            </PieChart>
+        </ResponsiveContainer>
+    );
+};
 
 const TrendChart = ({ data }: { data: any[] }) => (
     <ResponsiveContainer width="100%" height={400}>

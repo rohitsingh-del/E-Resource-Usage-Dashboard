@@ -273,15 +273,24 @@ export interface MonthlyAggregation {
 
 export const getNewspaperLanguage = (name: string): Language => {
     const lowerName = name.toLowerCase();
+
+    // Explicit checks for known Hindi papers
     if (lowerName.includes('hindi') ||
         lowerName.includes('jagran') ||
         lowerName.includes('ujala') ||
         lowerName.includes('nav bharat') ||
         lowerName.includes('sahara') ||
         lowerName.includes('aaj') ||
-        lowerName.includes('jansatta')) {
+        lowerName.includes('jansatta') ||
+        lowerName.includes('hindustan') // matches "Hindustan" (Hindi)
+    ) {
+        // Special case: "Hindustan Times" is English, but contains "Hindustan"
+        if (lowerName.includes('hindustan times')) {
+            return 'English';
+        }
         return 'Hindi';
     }
+
     if (lowerName.includes('times') ||
         lowerName.includes('hindu') ||
         lowerName.includes('pioneer') ||
@@ -289,9 +298,13 @@ export const getNewspaperLanguage = (name: string): Language => {
         lowerName.includes('mail') ||
         lowerName.includes('tribune') ||
         lowerName.includes('standard') ||
-        lowerName.includes('mint')) {
+        lowerName.includes('mint') ||
+        lowerName.includes('mirror') ||
+        lowerName.includes('chronicle') ||
+        lowerName.includes('statesman')) {
         return 'English';
     }
+
     return 'Other';
 };
 
